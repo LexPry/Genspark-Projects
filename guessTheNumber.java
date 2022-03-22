@@ -21,6 +21,7 @@ public class guessTheNumber {
         // initiate game state value to determine if user will play again
         var play = "";
 
+        // Game Play loop
         do {
             while (attempts <= 6 && guess != answer) {
                 if (guess > answer) {
@@ -33,12 +34,14 @@ public class guessTheNumber {
                 attempts++;
             }
 
+            // after max attempts or correct attempt
             if (guess == answer) {
                 System.out.println("Good job, " + name + "! You guessed my number" +
                         " in " + attempts + " guesses!");
             } else
                 System.out.println("Sorry, You'll have to try again!");
 
+            // Ask if user would like to play again, if yes reset values
             System.out.println("Would you like to play again? (y or n)");
             play = in.next();
 

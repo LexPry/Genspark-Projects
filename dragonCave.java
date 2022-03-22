@@ -2,6 +2,7 @@ import java.util.Scanner;
 
 /**
  * Project 1 Dragon cave
+ *
  * @author Alexander Boswell
  */
 
@@ -19,18 +20,23 @@ public class dragonCave {
          * @param choice stores user input, only takes 1 or 2 as values
          */
 
-        var in = new Scanner(System.in);
-        int choice = Integer.parseInt(in.next());
+        Scanner in = new Scanner(System.in);
+        int choice = 0;
 
-        /**
-         * While loop to ensure the answer will always be 1 or 2
-         */
-
-        while (choice != 1 && choice != 2)
-        {
-                System.out.println("Not a valid answer\nTry Again!");
+        // Try-catch for Number Format Exception
+        do {
+            try {
                 choice = Integer.parseInt(in.next());
-        }
+
+                if (choice != 1 && choice != 2) {
+                    System.out.println("Not a valid answer\nTry Again!");
+                }
+
+            } catch (NumberFormatException e) {
+                System.out.println("Exception Caught: Number Format Exception\n" +
+                        "Please Enter only integers!\nTry again!");
+            }
+        } while (choice != 1 && choice != 2); // do-while loop to ensure the answer will always be 1 or 2
 
         // different outcomes for one and two
         if (choice == 1) {

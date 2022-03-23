@@ -1,3 +1,5 @@
+package project1;
+
 import java.util.Scanner;
 
 /**
@@ -17,21 +19,21 @@ public class dragonCave {
         /**
          * Instance of a Scanner object to take user input
          * @param in scanner object
-         * @param choice stores user input, only takes 1 or 2 as values
+         * @param userChoice stores user input, only takes 1 or 2 as values
          */
 
-        Scanner in = new Scanner(System.in);
         int choice = 0;
 
-        // Try-catch for Number Format Exception
+        // class for testing user choice
+        var userChoice = new userChoice();
+
+        // Scanner object for taking user input
+        Scanner in = new Scanner(System.in);
+
         do {
+            // Try catch for number format exception
             try {
-                choice = Integer.parseInt(in.next());
-
-                if (choice != 1 && choice != 2) {
-                    System.out.println("Not a valid answer\nTry Again!");
-                }
-
+                choice = userChoice.choice(Integer.parseInt(in.next()));
             } catch (NumberFormatException e) {
                 System.out.println("Exception Caught: Number Format Exception\n" +
                         "Please Enter only integers!\nTry again!");
@@ -48,6 +50,9 @@ public class dragonCave {
                     "\nA large dragon jumps out in front of you! He opens his jaws and..." +
                     "\nShares his treasure with you!");
         }
+
+        // close scanner
+        in.close();
 
         System.exit(0);
     }

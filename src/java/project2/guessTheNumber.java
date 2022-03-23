@@ -1,19 +1,15 @@
+package project2;
+
 import java.util.Scanner;
 
 public class guessTheNumber {
     public static void main(String[] args) {
-        // Generate random number between 1 and 20
-        int answer = (int) (Math.random() * 20);
-
         Scanner in = new Scanner(System.in);
         // Ask for user's name and store it for later use
         System.out.println("Hello! What is your name?");
         String name;
 
         name = in.next();
-
-        System.out.println("Well, " + name + " I am thinking of a number between " +
-                "1 and 20. You have six attempts!\nTake a guess.");
 
         // Take user choices and give feed back on if it is too high or low
         // User must guess within 6 tries
@@ -23,23 +19,22 @@ public class guessTheNumber {
         // initiate game state value to determine if user will play again
         var play = "";
 
+        var check = new checkGuess();
+
         // Game Play loop
         do {
+            // Generate random number between 1 and 20
+            int answer = (int) (Math.random() * 20);
+
             // while loop catch and try, checks for attempts <= 6 and guess != answer
+            System.out.println("Well, " + name + " I am thinking of a number between " +
+                    "1 and 20. You have six attempts!\nTake a guess.");
+
             do {
                 try {
-                    while (guess != answer) {
-                        guess = Integer.parseInt(in.next());
-
-                        if (guess > answer) {
-                            System.out.println("Your guess is too high.\nTake a guess.");
-                        } else if (guess < answer) {
-                            System.out.println("Your guess is too low.\nTake a guess.");
-                        }
-                    }
-
+                    guess = Integer.parseInt(in.next());
+                    System.out.println(check.checker(guess, answer));
                     attempts++;
-
                 } catch (NumberFormatException e) {
                     System.out.println("Caught Exception: Number Format Exception.\nPlease enter a valid integer.");
                 }
@@ -69,6 +64,8 @@ public class guessTheNumber {
 
         } while (play.equalsIgnoreCase("y"));
 
+        // close scanner and exit
+        in.close();
         System.exit(0);
     }
 }

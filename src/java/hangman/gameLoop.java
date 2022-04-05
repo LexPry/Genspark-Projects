@@ -65,9 +65,9 @@ public class gameLoop {
                         correctGuesses += currentGuess;
                     }
                 } else {
-                    currentAttempts++;
                     if (!incorrectGuesses.contains(currentGuess)) {
                         incorrectGuesses += currentGuess;
+                        currentAttempts++;
                     }
                     System.out.println("Incorrect...\nTry again!");
                 }
@@ -139,8 +139,7 @@ public class gameLoop {
             reader.close();
             int index = random.nextInt(answerChoices.size());
             answer = answerChoices.get(index);
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
             System.out.println("An error has occurred: ");
             e.printStackTrace();
         }

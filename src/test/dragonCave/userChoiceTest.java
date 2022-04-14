@@ -1,4 +1,4 @@
-package project1;
+package dragonCave;
 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;

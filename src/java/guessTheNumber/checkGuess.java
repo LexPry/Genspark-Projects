@@ -1,4 +1,4 @@
-package project2;
+package guessTheNumber;
 
 public class checkGuess {
     public String checker(int guess, int answer) {

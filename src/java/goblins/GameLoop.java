@@ -39,6 +39,7 @@ public class GameLoop {
      * as player input does not equal "q"
      */
     public void loop() {
+        System.out.println("\nPress: w,a,s,d to move");
         while (!player.lastCommand.equals("q")) {
             space.renderSpace();
             space.movePlayer();

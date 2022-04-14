@@ -70,6 +70,10 @@ public class Land {
     public void movePlayer() {
         isDead();
         Position previous = new Position(player.getPosition().getX(), player.getPosition().getY());
+        if (gameWinCheck()) {
+            System.out.println("Congratulations!!\n YOU WIN!");
+            System.exit(0);
+        }
         player.userInput();
         if (!collidedWithWall()) {
             modifySpaceAtLocation(previous, previousSprite);
@@ -108,6 +112,10 @@ public class Land {
      */
     private void isDead() {
         Arrays.stream(allGoblins).filter(gobs -> !gobs.getAlive()).forEach(gobs -> modifySpaceAtLocation(gobs.getPosition(), defaultSprite));
+    }
+
+    public boolean gameWinCheck() {
+        return Arrays.stream(allGoblins).noneMatch(Goblin::getAlive);
     }
 
     private boolean willCollide(Sprite sprite) {

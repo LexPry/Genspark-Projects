@@ -1,4 +1,4 @@
-package project2;
+package guessTheNumber;
 
 import org.junit.jupiter.api.Test;
 

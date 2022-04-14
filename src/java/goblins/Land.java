@@ -11,20 +11,15 @@ import java.util.Arrays;
 public class Land {
 
     // variables
-    private Sprite[][] space;
+    private final Sprite[][] space;
     private final int maxColumns;
     private final int maxRows;
     private Sprite previousSprite;
     private Human player;
     private Goblin[] allGoblins;
-
     public final int maxCharacterAmount;
-
-    Render render = new Render();
-
-    private Sprite defaultSprite = new Sprite('\u03A6');
+    private final Sprite defaultSprite = new Sprite('\u03A6');
     private final Sprite wallSprite = new Sprite('\u00F7');
-
 
     // constructor
     public Land(int rows, int columns) {
@@ -38,6 +33,11 @@ public class Land {
 
     // methods
 
+    /**
+     * Assigns every position the default land sprite
+     *
+     * @return returns Sprite[][] space with all spaces filled
+     */
     private Sprite[][] initLand() {
         try {
             for (int i = 0; i < maxColumns; i++) {
@@ -62,7 +62,7 @@ public class Land {
      * @return returns land so the current position is updated with the correct sprite
      */
     public Land modifySpaceAtLocation(Position position, Sprite sprite) {
-        previousSprite = new Sprite(space[position.getX()][position.getY()].sprite);
+        previousSprite = new Sprite(space[position.getY()][position.getX()].sprite);
         space[position.getY()][position.getX()] = sprite;
         return this;
     }
@@ -96,6 +96,7 @@ public class Land {
 
     /**
      * Checks to see if player has collided with any of the goblin objects
+     *
      * @return the goblin that the character collided with or null if none are present at position
      */
     private Goblin collidedWithGoblin() {
@@ -106,7 +107,7 @@ public class Land {
      * checks all the goblins and sees if they're dead. If they are, reset their position to the maps default
      */
     private void isDead() {
-        Arrays.stream(allGoblins).filter(gobs -> !gobs.getAlive()).forEach(gobs -> modifySpaceAtLocation(gobs.getPosition(),defaultSprite));
+        Arrays.stream(allGoblins).filter(gobs -> !gobs.getAlive()).forEach(gobs -> modifySpaceAtLocation(gobs.getPosition(), defaultSprite));
     }
 
     private boolean willCollide(Sprite sprite) {
@@ -115,6 +116,7 @@ public class Land {
 
     /**
      * updates the players' location with their sprite each time they move
+     *
      * @param player Human player
      * @return returns land with player at current location
      */
@@ -126,6 +128,7 @@ public class Land {
 
     /**
      * goes through each goblin and assigns them a location on the map if they're still alive
+     *
      * @param goblin goes through each goblin and places them on the map if they are alive
      * @return returns land with goblins
      */
@@ -133,7 +136,7 @@ public class Land {
         this.allGoblins = goblin;
         Arrays.stream(allGoblins)
                 .filter(Goblin::getAlive)
-                .forEach(gob -> modifySpaceAtLocation(gob.getPosition(),gob.sprite));
+                .forEach(gob -> modifySpaceAtLocation(gob.getPosition(), gob.sprite));
         return this;
     }
 

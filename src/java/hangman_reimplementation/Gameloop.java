@@ -1,8 +1,6 @@
 package hangman_reimplementation;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -10,14 +8,18 @@ public class Gameloop {
 
     // variables -----------------
     private String answer;
-    private int winCount;
     private String play;
-    private int difficulty = 8;
-    private int guesses;
-    private int currentAttempts;
     private String currentGuess;
     private String correctGuesses;
     private String incorrectGuesses;
+    private String name;
+    private int winCount;
+    private int score;
+    private int answerLengthCap = 7;
+    private int guesses;
+    private int currentAttempts;
+    private int triesLeft;
+
     private boolean won;
 
 
@@ -33,6 +35,7 @@ public class Gameloop {
         this.correctGuesses = "";
         this.incorrectGuesses = "";
         this.won = false;
+        this.name = "";
 
         play(answer, guesses);
     }
@@ -43,12 +46,21 @@ public class Gameloop {
     public void play(String answer, int guesses) {
         try (Scanner in = new Scanner(System.in)) {
             System.out.println("\nH A N G M A N");
+            System.out.println("Current High Score: " + highScore());
+
+            if (name.length() == 0) {
+                System.out.println("What is your name?");
+                String tempName = in.next();
+                setName(tempName);
+            }
 
 
             while (currentAttempts < answer.length() + 5
                     && !checkAnswer(answer, correctGuesses)
                     && play.equalsIgnoreCase("y")) {
+                triesLeft = (answer.length() + 5) - currentAttempts;
                 if (guesses > 0) {
+                    System.out.println("You have: " + triesLeft + " tries left");
                     System.out.println("Incorrect Letters: " + incorrectGuesses);
                     System.out.println("Correct Letters: " + correctGuesses);
                 }
@@ -57,15 +69,14 @@ public class Gameloop {
                 currentGuess = in.next();
 
                 // make sure the guess is one character
-                // TODO figure out how to make sure the user only inputs one character without while loop
-                if (currentGuess.length() > 1) {
+                if (currentGuess.length() > 1 || !currentGuess.matches("[a-zA-Z]")) {
                     System.out.println("Please enter a single letter");
-                    currentGuess = in.next();
+                    play(this.answer, this.guesses);
                 }
 
                 // feedback for each guess
                 if (answer.contains(currentGuess.toLowerCase())) {
-                    System.out.println("Good guess\n");
+                    System.out.println("\nGood guess\n");
                     if (!correctGuesses.contains(currentGuess)) {
                         correctGuesses += currentGuess;
                         correctGuesses = displayCorrectGuesses(answer, correctGuesses);
@@ -76,7 +87,7 @@ public class Gameloop {
                         incorrectGuesses += currentGuess;
                         currentAttempts++;
                     }
-                    System.out.println("Incorrect...\nTry again!");
+                    System.out.println("\nIncorrect...\nTry again!");
                 }
                 guesses++;
 
@@ -92,19 +103,27 @@ public class Gameloop {
                     play = in.next();
 
                     if (!play.equalsIgnoreCase("y") && !play.equalsIgnoreCase("n")) {
-                        System.out.println("Please enter \"y\" or \"n\"");
-                        play = in.next();
+                        play = playCheck(play, in);
                     }
 
-                    // reset everything before the loop
+                    // reset everything before looping again, or exit if play is "n"
                     if (play.equalsIgnoreCase("y")) {
+                        score += currentAttempts - answer.length();
                         answer = getAnswer();
                         currentGuess = "";
                         correctGuesses = "";
                         incorrectGuesses = "";
                         currentAttempts = 0;
                         won = false;
+                        if (score > highScore()) {
+                            System.out.println("Congrats " + name + " You now have the High-Score:" + score);
+                        }
                     } else if (play.equalsIgnoreCase("n")) {
+                        score += currentAttempts - answer.length();
+                        if (score >= 0) {
+                            writeToFile(name, score);
+                        } else
+                            writeToFile(name, 0);
                         System.out.println("Thanks for playing!");
                         System.exit(0);
                     }
@@ -118,6 +137,43 @@ public class Gameloop {
         }
     }
 
+    // methods ---------------------------------------------------------------------------------------------------------
+
+    /**
+     * scan file for scores
+     * @return int - the highest integer in the file
+     */
+    public int highScore() {
+        List<String> scoreChart = new ArrayList<>();
+        int highScore = 0;
+
+        try (var scores = new BufferedReader(new FileReader("src/java/hangman_reimplementation/resources/Score_Chart.txt"))) {
+            scoreChart = scores.lines().map(x -> x.replaceAll("[a-zA-Z:,]+", "").trim())
+                    .filter(a -> !a.isEmpty())
+                    .collect(Collectors.toList());
+        } catch (IOException e) {
+            System.out.println("Error detected: ");
+            e.printStackTrace();
+        }
+
+        if (!scoreChart.isEmpty()) {
+            try {
+                highScore = scoreChart.stream()
+                        .map(Integer::parseInt)
+                        .reduce(Integer::max).get();
+            } catch (Exception e) {
+                System.out.println("Error caught in highScore() : ");
+                e.printStackTrace();
+            }
+        }
+
+        return highScore;
+    }
+
+    /**
+     * Picks a random line in the Dictionary file and uses it as the answer for the round
+     * @return String - answer for the round
+     */
     public String getAnswer() {
         String currentGameAnswer;
 
@@ -131,13 +187,18 @@ public class Gameloop {
             throw new RuntimeException(e.getCause());
         }
 
-        answerChoices = answerChoices.stream().filter(n -> n.length() < difficulty).collect(Collectors.toCollection(ArrayList::new));
+        if (!answerChoices.isEmpty()) {
+            answerChoices = answerChoices.stream()
+                    .filter(n -> n.length() < answerLengthCap)
+                    .collect(Collectors.toCollection(ArrayList::new));
+        }
 
         int index = rand.nextInt(answerChoices.size());
         currentGameAnswer = answerChoices.get(index);
 
         return currentGameAnswer;
     }
+
 
     public boolean checkAnswer(String answer, String currentGuesses) {
         List<Character> answerList = answer.chars().mapToObj(a -> (char) a).collect(Collectors.toList());
@@ -172,12 +233,60 @@ public class Gameloop {
         return correct.toString();
     }
 
-    // getters and setters
-    public int getDifficulty() {
-        return difficulty;
+
+    /*
+    Trying to use recursion to always get a y or n without a while loop...
+    currently for every loop if play != y/n call again, then check, but it kills scanner in main game loop...
+     */
+
+    public String playCheck(String play, Scanner in) {
+        String tempResult = play;
+        String result = "";
+        if (!tempResult.matches("[y n]+")) {
+            System.out.println("Please enter \"y\" or \"n\"");
+            try {
+                tempResult = in.next();
+                if (tempResult.matches("[yn]")) {
+                    result = tempResult;
+                    setPlay(result);
+                }
+                playCheck(result, in);
+            } catch (Exception e) {
+                System.out.println("Error: ");
+                e.printStackTrace();
+            }
+        }
+
+        return getPlay();
     }
 
-    public void setDifficulty(int difficulty) {
-        this.difficulty = difficulty;
+    public void writeToFile(String name, int score) {
+        try (FileWriter writer = new FileWriter("src/java/hangman_reimplementation/resources/Score_Chart.txt", true)) {
+            writer.write("\nName: " + name + ", Score: " + score);
+        } catch (IOException e) {
+            System.out.println("Error Detected: ");
+            e.printStackTrace();
+        }
+    }
+
+    // getters and setters
+    public int getAnswerLengthCap() {
+        return answerLengthCap;
+    }
+
+    public void setAnswerLengthCap(int answerLengthCap) {
+        this.answerLengthCap = answerLengthCap;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setPlay(String string) {
+        this.play = string;
+    }
+
+    public String getPlay() {
+        return this.play;
     }
 }

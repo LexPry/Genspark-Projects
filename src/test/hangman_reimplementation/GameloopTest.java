@@ -12,7 +12,7 @@ class GameloopTest {
         var game = new Gameloop();
         String answer = game.getAnswer();
         System.out.println(answer);
-        assertTrue(answer.length() < game.getDifficulty());
+        assertTrue(answer.length() < game.getAnswerLengthCap());
     }
 
     @Test

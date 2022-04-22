@@ -11,7 +11,13 @@ public class goblins
         window.setResizable(false);
         window.setTitle("Humans Vs. Goblins");
 
+        GamePanel gamePanel = new GamePanel();
+        window.add(gamePanel);
+        window.pack();
+
         window.setLocationRelativeTo(null);
         window.setVisible(true);
+
+        gamePanel.startGameThread();
         }
     }

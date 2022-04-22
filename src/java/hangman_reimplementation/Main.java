@@ -7,9 +7,11 @@ package hangman_reimplementation;
 // TODO the game will tell the user if they have the high score
 // TODO no exceptions are allowed, all exceptions must be caught by program
 
-public class Main {
-    public static void main(String[] args) {
+public class Main
+    {
+    public static void main(String[] args)
+        {
         var game = new Gameloop();
 
+        }
     }
-}
